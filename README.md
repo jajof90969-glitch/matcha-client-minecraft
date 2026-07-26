@@ -5,7 +5,7 @@ A compact, native macOS companion for Minecraft with independent controls for **
 Matcha is designed to feel at home on macOS: it stays available across Spaces and over fullscreen games, remembers your settings, and connects to Minecraft through a small local Fabric bridge. It does not contact the internet or generate macOS mouse and keyboard input.
 
 > [!IMPORTANT]
-> Player visibility, aim assistance, and automated attacks may be prohibited by a server's rules. Use these features only in single-player worlds or where the server explicitly permits them.
+> Matcha currently **ONLY** supports MacOS on 1.21.1 fabric
 
 ## Features
 
@@ -162,3 +162,4 @@ HDR or display-management software may prevent gamma changes. Try disabling HDR 
 ### Aim Assist or Auto Shoot stops unexpectedly
 
 Both features disable when the controller loses its local connection to the bridge. Check that the app is open and Minecraft is still running.
+
