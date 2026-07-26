@@ -1,11 +1,11 @@
 # Matcha
 
-Currently **ONLY** supports 1.21.1 Fabric on MacOS
-
 A compact, native macOS companion for Minecraft with independent controls for **Fullbright**, **Player Glow**, **Aim Assist**, and **Auto Shoot**.
 
 Matcha is designed to feel at home on macOS: it stays available across Spaces and over fullscreen games, remembers your settings, and connects to Minecraft through a small local Fabric bridge. It does not contact the internet or generate macOS mouse and keyboard input.
 
+> [!IMPORTANT]
+> Player visibility, aim assistance, and automated attacks may be prohibited by a server's rules. Use these features only in single-player worlds or where the server explicitly permits them.
 
 ## Features
 
@@ -25,13 +25,13 @@ Choose from grouped targets—players, passive mobs, hostile mobs, or all living
 - **Edge** leaves the camera completely free while the crosshair remains inside the entity's projected bounds, then applies only the smallest correction needed at the boundary.
 - **Speed** controls smoothing and the maximum correction per rendered frame.
 - **Crosshair range** controls the activation cone from 5° to 180°.
-- **Reaction delay** controls how long a new target must remain eligible before the camera begins moving, from 0 to 3 seconds.
+- **Minimum reaction** and **Maximum reaction** set a 0–3 second range. Each newly acquired target receives a random reaction time inside that range; matching values produce a fixed reaction time.
 
 Aim Assist pauses while a Minecraft menu is open. It also disables automatically if the app's local heartbeat disappears for 750 milliseconds.
 
 ### Auto Shoot
 
-Auto Shoot has its own target picker and can trigger on the **Head**, **Torso**, or **Every Part** of a matching entity. Its adjustable **Shot delay** ranges from 0.25 to 3 seconds and applies before the first eligible shot as well as between repeat shots.
+Auto Shoot has its own target picker and can trigger on the **Head**, **Torso**, or **Every Part** of a matching entity. Separate **Minimum delay** and **Maximum delay** sliders range from 0.25 to 3 seconds. Each first or repeat shot receives a fresh random delay inside that range; setting both sliders to the same value produces a fixed delay.
 
 It attacks only when all of the following are true:
 
@@ -39,7 +39,7 @@ It attacks only when all of the following are true:
 - The entity matches the selected target.
 - The target is within normal vanilla reach.
 - The standard attack cooldown is at least 95% ready.
-- The configurable shot delay—between 0.25 and 3 seconds—has elapsed.
+- The randomly selected delay between the configured minimum and maximum has elapsed.
 
 Attacks run at the end of Minecraft's client tick, after the normal movement and camera update. The feature does not extend reach or create system-level input events.
 
@@ -97,6 +97,53 @@ Fullbright changes the entire display containing the likely game window. If the 
 - `FullbrightControllerTests` — preference, targeting, tracking, message, and rendering tests
 
 The bridge directory retains its original `MatchaSheepBridge` name so existing installations can upgrade cleanly.
+
+## Build from source
+
+Building requires Xcode 16 or later. The checked-in project is also compatible with Xcode 26.
+
+1. Open `FullbrightController.xcodeproj` in Xcode.
+2. Select the **FullbrightController** scheme and **My Mac** destination.
+3. In **Signing & Capabilities**, select your Apple Developer team and replace the example bundle identifier if needed.
+4. Press **Run**.
+
+For an unsigned local build:
+
+```sh
+xcodebuild -project FullbrightController.xcodeproj \
+  -scheme FullbrightController \
+  -destination 'platform=macOS,arch=arm64' \
+  -derivedDataPath work/DerivedData \
+  CODE_SIGNING_ALLOWED=NO build
+```
+
+To run the tests:
+
+```sh
+xcodebuild -project FullbrightController.xcodeproj \
+  -scheme FullbrightController \
+  -destination 'platform=macOS,arch=arm64' \
+  -derivedDataPath work/DerivedData \
+  CODE_SIGNING_ALLOWED=NO test
+```
+
+If XcodeGen is installed, regenerate the Xcode project with:
+
+```sh
+xcodegen generate
+```
+
+## Sign and distribute
+
+For direct distribution outside the Mac App Store:
+
+1. Set a unique bundle identifier and select an Apple Developer team under **Signing & Capabilities**.
+2. In Xcode, choose **Product → Archive**.
+3. In Organizer, choose **Distribute App**.
+4. Select **Developer ID** and submit the app for notarization when prompted.
+5. Export the notarized app.
+
+Xcode's Organizer handles signing, notarization, and ticket stapling and is the simplest distribution path. A local-only build can instead be exported with **Copy App**.
 
 ## Troubleshooting
 
