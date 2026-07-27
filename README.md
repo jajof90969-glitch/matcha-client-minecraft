@@ -1,165 +1,142 @@
 # Matcha
 
-A compact, native macOS companion for Minecraft with independent controls for **Fullbright**, **Player Glow**, **Aim Assist**, and **Auto Shoot**.
+Matcha is a native macOS companion for Minecraft with a compact controller, full-screen support, and a local Fabric bridge. Its features are organized into four tabs: **Visuals**, **Aim Assist**, **Auto Shoot**, and **Movement**.
 
-Matcha is designed to feel at home on macOS: it stays available across Spaces and over fullscreen games, remembers your settings, and connects to Minecraft through a small local Fabric bridge. It does not contact the internet or generate macOS mouse and keyboard input.
-
-> [!IMPORTANT]
-> Matcha currently **ONLY** supports MacOS on 1.21.1 fabric
+> Matcha **ONLY** supports fabric 1.21.1 MacOS
 
 ## Features
 
-### Visuals
+- **Fullbright** brightens dark areas and restores the original display appearance immediately when switched off.
+- **Player Glow** outlines up to 64 other players within 128 blocks, including players behind walls. Your own player is excluded.
+- **Aim Assist** provides smooth camera guidance with target categories, Normal and Edge modes, configurable aim points, speed, crosshair range, and randomized reaction times.
+- **Auto Shoot** attacks only when the crosshair is over a matching target, vanilla reach and cooldown checks pass, and the selected randomized delay has elapsed.
+- **No-Slow** preserves normal local movement while using items or moving through cobwebs.
+- **Full-screen support** keeps Matcha’s click-through overlays above Minecraft in a native macOS full-screen Space.
 
-- **Fullbright** adjusts the selected display's gamma and restores the original appearance immediately when switched off.
-- **Player Glow** outlines every other player within 128 blocks, including wall-hidden players. Your own player is excluded.
-- Fullbright and Player Glow operate independently.
-- The app automatically prefers the display containing a visible Minecraft, Java, or Roblox window.
-
-### Aim Assist
-
-Choose from grouped targets—players, passive mobs, hostile mobs, or all living entities—or select one of 51 individual mob types.
-
-- **Normal** smoothly guides the camera toward the selected Head, Torso, or Random aim point.
-- **Random** chooses a new inset point within the target every 400 milliseconds, keeping it stable between changes to avoid frame-by-frame jitter.
-- **Edge** leaves the camera completely free while the crosshair remains inside the entity's projected bounds, then applies only the smallest correction needed at the boundary.
-- **Speed** controls smoothing and the maximum correction per rendered frame.
-- **Crosshair range** controls the activation cone from 5° to 180°.
-- **Minimum reaction** and **Maximum reaction** set a 0–3 second range. Each newly acquired target receives a random reaction time inside that range; matching values produce a fixed reaction time.
-
-Aim Assist pauses while a Minecraft menu is open. It also disables automatically if the app's local heartbeat disappears for 750 milliseconds.
-
-### Auto Shoot
-
-Auto Shoot has its own target picker and can trigger on the **Head**, **Torso**, or **Every Part** of a matching entity. Separate **Minimum delay** and **Maximum delay** sliders range from 0.25 to 3 seconds. Each first or repeat shot receives a fresh random delay inside that range; setting both sliders to the same value produces a fixed delay.
-
-It attacks only when all of the following are true:
-
-- Minecraft's real crosshair hit falls inside the selected region.
-- The entity matches the selected target.
-- The target is within normal vanilla reach.
-- The standard attack cooldown is at least 95% ready.
-- The randomly selected delay between the configured minimum and maximum has elapsed.
-
-Attacks run at the end of Minecraft's client tick, after the normal movement and camera update. The feature does not extend reach or create system-level input events.
+All features work independently. The Fabric-powered features automatically switch off inside the bridge if the Matcha app disconnects.
 
 ## Requirements
 
 - Apple Silicon Mac
-- macOS 14 or later
-- Minecraft 1.21.1 with Fabric
-- The included `matcha-player-bridge-1.0.0.jar`
+- macOS 14 or newer
+- Minecraft Java Edition 1.21.1
+- Fabric Loader and Fabric API
+- Java 21 for Minecraft
 
-The supplied bridge is specific to Minecraft 1.21.1 and Fabric. Other Minecraft versions and mod loaders require a compatible bridge build.
+The included bridge is specifically built for **Minecraft 1.21.1 with Fabric**. Other Minecraft versions and mod loaders require a matching bridge build.
 
-## Install and run
+## Installation
 
-1. Add `matcha-player-bridge-1.0.0.jar` to the `mods` folder of a compatible Fabric modpack. It is already installed in **FullBright Test**.
-2. Start the modpack.
-3. Unzip `Fullbright Controller.zip`.
-4. Open **Fullbright Controller.app**.
-5. Enter a world and choose a feature from the **Visuals**, **Aim Assist**, or **Auto Shoot** tab.
+### 1. Install the Fabric bridge
 
-If macOS blocks the app because it is from an unidentified developer, Control-click **Fullbright Controller.app**, choose **Open**, and confirm.
+1. Locate your Minecraft instance’s `mods` folder.
+2. Copy `matcha-player-bridge-1.0.0.jar` into that folder.
+3. Confirm the instance also contains Fabric API.
+4. Start Minecraft using the Fabric 1.21.1 profile.
 
-The global Fullbright shortcut is **Control–Option–F**.
+If you are using the provided **FullBright Test** instance, the bridge may already be installed. Replace the existing JAR when updating Matcha.
 
-## How it works
+### 2. Install the macOS app
 
-The Fabric bridge sends game-state updates to the controller over UDP on `127.0.0.1:40117`. Communication stays on your Mac; the bridge does not contact the internet.
+1. Download and unzip `Fullbright Controller.zip`.
+2. Move **Fullbright Controller.app** to your Applications folder if desired.
+3. Double-click the app to launch it.
 
-Each update includes the Minecraft Java process ID so the app can identify the correct game window even when other launchers, servers, or Java applications are open. Player rectangles are projected from Minecraft's live view and projection matrices at up to 120 Hz, keeping outlines aligned through camera movement, sprinting, view bobbing, and FOV changes.
+## If macOS says the developer cannot be verified
 
-The controller uses a single click-through, GPU-composited window for player outlines. A capture of only the Minecraft window should not include the overlay, while a recording of the entire display will.
+Matcha’s downloadable build is locally signed rather than notarized with an Apple Developer ID, so macOS may display an **unidentified developer**, **cannot verify the developer**, or **Apple could not verify this app is free of malware** warning.
 
-If Minecraft is minimized or closed—or if player data stops arriving for 750 milliseconds—the overlay hides automatically.
+Try opening it normally once, then:
 
-## Privacy and system access
+1. Open **System Settings** from the Apple menu.
+2. Select **Privacy & Security** in the sidebar.
+3. Scroll down to the **Security** section.
+4. Find the message stating that **Fullbright Controller** was blocked.
+5. Click **Open Anyway**.
+6. Authenticate with Touch ID or your Mac password if prompted.
+7. Click **Open** in the final confirmation dialog.
 
-- No internet connection is used.
-- No gameplay data leaves your Mac.
-- No mouse or keyboard events are generated at the macOS level.
-- The global shortcut receives only its registered key combination; it does not monitor typing.
-- Screen Recording and Accessibility permissions are not required.
-- Disabling Fullbright immediately restores the display's original transfer settings.
+macOS remembers this choice, so you should not need to repeat these steps for that copy of the app. If **Open Anyway** is missing, try launching the app again and return to **Privacy & Security**. You can also Control-click the app in Finder, choose **Open**, and confirm **Open** when that option is available.
 
-Fullbright changes the entire display containing the likely game window. If the window cannot be identified, the main display is used. HDR and some externally managed displays may reject gamma changes; in that case, the app reports the problem and leaves Fullbright off.
+Do not disable Gatekeeper globally.
+
+## Getting started
+
+1. Start Minecraft and enter a world.
+2. Open Matcha.
+3. Choose a tab and enable the feature you want.
+4. Use **Control–Option–F** to toggle Fullbright from anywhere.
+
+Matcha uses the Java process ID reported by the bridge to attach to the correct Minecraft window, even when launchers or other Java applications are running. The controller and overlays remain available in Minecraft’s normal macOS full-screen mode.
+
+## Feature details
+
+### Fullbright and Player Glow
+
+Fullbright applies a display gamma adjustment to the screen containing the detected game window. Turning it off immediately restores the original display settings. Player Glow uses one click-through, GPU-composited overlay and does not take mouse or keyboard focus.
+
+### Aim Assist
+
+Aim Assist supports Players, passive mobs, hostile mobs, all living entities, and 51 individual targets.
+
+- **Normal** guides the camera toward the selected Head, Torso, or Random aim point.
+- **Random** chooses a stable inset point across the target every 400 milliseconds.
+- **Edge** leaves the camera free while the crosshair remains inside the entity’s projected bounds, then applies the smallest correction needed at the edge.
+- **Minimum reaction** and **Maximum reaction** define a randomized 0–3 second reaction-time range. Set both to the same value for a fixed reaction time.
+
+Aim Assist pauses while a Minecraft menu is open and does not generate macOS mouse or keyboard events.
+
+### Auto Shoot
+
+Auto Shoot includes its own target selector, Head/Torso/Every Part trigger regions, and separate minimum and maximum delays from 0.25 to 3 seconds. Every shot receives a new random delay within that range; matching values create a fixed delay.
+
+An attack occurs only when:
+
+- Minecraft’s actual crosshair hit matches the chosen target and region.
+- The target is within normal vanilla reach.
+- The standard attack cooldown is at least 95% ready.
+- The selected delay has elapsed.
+
+Attacks run during Minecraft’s normal key-input phase to preserve ordinary interaction packet ordering.
+
+### No-Slow
+
+No-Slow preserves normal local walking input while eating, drinking, drawing a bow, blocking, using other items, or moving through cobwebs. Cobweb handling applies only to the local player; berry bushes, powder snow, and other block effects remain unchanged.
+
+The server remains authoritative and may correct or reject modified movement.
+
+## Privacy and networking
+
+- Communication stays on `127.0.0.1` using UDP port `40117`.
+- The bridge does not contact the internet.
+- Matcha does not inject macOS mouse or keyboard input into Minecraft.
+- The global shortcut listens only for its registered key combination.
+- Feature settings are stored locally in macOS `UserDefaults`.
+- If Minecraft closes, is minimized, or stops sending bridge data, Matcha hides its player overlay automatically.
+
+## Known limitations
+
+- Some servers may reject or correct Aim Assist, Auto Shoot, or No-Slow behavior according to their own rules.
+- HDR and some externally managed displays may reject Fullbright’s gamma adjustment.
+- Display recordings can include Matcha’s overlays; a recording limited to the Minecraft window generally will not.
+- The supplied app is locally signed but not Apple-notarized, which causes the first-launch security warning described above.
 
 ## Project structure
 
-- `App` — lifecycle and central state coordination
-- `UI` — SwiftUI controller, onboarding, menu bar interface, and native visual-effect surfaces
-- `WindowManagement` — game-window discovery, exact Java-process matching, bridge updates, and the player-outline window
-- `Rendering` — display-gamma control and rendering support
-- `Hotkey` — the registered Carbon global shortcut
-- `Preferences` — versioned local settings stored with `UserDefaults`
-- `MatchaSheepBridge` — the client-only Fabric 1.21.1 bridge
-- `FullbrightControllerTests` — preference, targeting, tracking, message, and rendering tests
-
-The bridge directory retains its original `MatchaSheepBridge` name so existing installations can upgrade cleanly.
+- `FullbrightController` — native Swift and SwiftUI macOS app.
+- `MatchaSheepBridge` — client-only Fabric 1.21.1 bridge.
+- `FullbrightControllerTests` — macOS unit tests.
+- `project.yml` — XcodeGen project definition.
 
 ## Build from source
 
-Building requires Xcode 16 or later. The checked-in project is also compatible with Xcode 26.
+Open `FullbrightController.xcodeproj` in Xcode, select the **FullbrightController** scheme and **My Mac**, choose your signing team, and press **Run**.
 
-1. Open `FullbrightController.xcodeproj` in Xcode.
-2. Select the **FullbrightController** scheme and **My Mac** destination.
-3. In **Signing & Capabilities**, select your Apple Developer team and replace the example bundle identifier if needed.
-4. Press **Run**.
-
-For an unsigned local build:
+Build the Fabric bridge from `MatchaSheepBridge` with Java 21:
 
 ```sh
-xcodebuild -project FullbrightController.xcodeproj \
-  -scheme FullbrightController \
-  -destination 'platform=macOS,arch=arm64' \
-  -derivedDataPath work/DerivedData \
-  CODE_SIGNING_ALLOWED=NO build
+./gradlew build
 ```
 
-To run the tests:
-
-```sh
-xcodebuild -project FullbrightController.xcodeproj \
-  -scheme FullbrightController \
-  -destination 'platform=macOS,arch=arm64' \
-  -derivedDataPath work/DerivedData \
-  CODE_SIGNING_ALLOWED=NO test
-```
-
-If XcodeGen is installed, regenerate the Xcode project with:
-
-```sh
-xcodegen generate
-```
-
-## Sign and distribute
-
-For direct distribution outside the Mac App Store:
-
-1. Set a unique bundle identifier and select an Apple Developer team under **Signing & Capabilities**.
-2. In Xcode, choose **Product → Archive**.
-3. In Organizer, choose **Distribute App**.
-4. Select **Developer ID** and submit the app for notarization when prompted.
-5. Export the notarized app.
-
-Xcode's Organizer handles signing, notarization, and ticket stapling and is the simplest distribution path. A local-only build can instead be exported with **Copy App**.
-
-## Troubleshooting
-
-### The app cannot connect to Minecraft
-
-Confirm that the bridge JAR is in the active Fabric modpack's `mods` folder and that the modpack is running Minecraft 1.21.1.
-
-### Player Glow disappears
-
-The overlay hides when Minecraft is minimized, closed, or has not sent player data for 750 milliseconds. Return to an active world and confirm that the bridge is loaded.
-
-### Fullbright will not turn on
-
-HDR or display-management software may prevent gamma changes. Try disabling HDR or testing on a different display.
-
-### Aim Assist or Auto Shoot stops unexpectedly
-
-Both features disable when the controller loses its local connection to the bridge. Check that the app is open and Minecraft is still running.
+The finished bridge JAR is written to `MatchaSheepBridge/build/libs`.
 
