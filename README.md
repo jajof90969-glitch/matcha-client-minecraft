@@ -1,16 +1,18 @@
 # Matcha
 
-Matcha is a native macOS companion for Minecraft with a compact controller, full-screen support, and a local Fabric bridge. Its features are organized into four tabs: **Visuals**, **Aim Assist**, **Auto Shoot**, and **Movement**.
+Matcha is a native macOS companion for Minecraft with a compact controller, full-screen support, and a local Fabric bridge. Its features are organized into five tabs: **Visuals**, **Aim Assist**, **Auto Shoot**, **Movement**, and **Detect**.
 
-> Matcha **ONLY** supports fabric 1.21.1 MacOS
+> Matcha currently **ONLY** supports 1.21.1 Fabric MacOS
 
 ## Features
 
 - **Fullbright** brightens dark areas and restores the original display appearance immediately when switched off.
 - **Player Glow** outlines up to 64 other players within 128 blocks, including players behind walls. Your own player is excluded.
-- **Aim Assist** provides smooth camera guidance with target categories, Normal and Edge modes, configurable aim points, speed, crosshair range, and randomized reaction times.
+- **Aim Assist** provides smooth camera guidance with target categories, Normal, Sticky, and Edge modes, configurable aim points, speed, crosshair range, and randomized reaction times.
 - **Auto Shoot** attacks only when the crosshair is over a matching target, vanilla reach and cooldown checks pass, and the selected randomized delay has elapsed.
-- **No-Slow** preserves normal local movement while using items or moving through cobwebs.
+- **Item No-Slow** preserves normal local movement while using items.
+- **Cobweb No-Slow** separately removes the local cobweb multiplier and is labeled **High Risk** because servers can easily detect or correct unusual cobweb movement.
+- **Player Detection** independently checks for suspected Speed, Flight, No Fall, and Reach behavior and posts rate-limited red warnings in Minecraft chat.
 - **Full-screen support** keeps Matcha’s click-through overlays above Minecraft in a native macOS full-screen Space.
 
 All features work independently. The Fabric-powered features automatically switch off inside the bridge if the Matcha app disconnects.
@@ -80,8 +82,11 @@ Fullbright applies a display gamma adjustment to the screen containing the detec
 Aim Assist supports Players, passive mobs, hostile mobs, all living entities, and 51 individual targets.
 
 - **Normal** guides the camera toward the selected Head, Torso, or Random aim point.
+- **Sticky** acquires normally, then locks the entity currently under the crosshair so Aim Assist cannot jump randomly to another target. Deliberately moving beyond the configured crosshair range breaks the lock.
 - **Random** chooses a stable inset point across the target every 400 milliseconds.
-- **Edge** leaves the camera free while the crosshair remains inside the entity’s projected bounds, then applies the smallest correction needed at the edge.
+- **Edge** leaves the camera free while the crosshair remains inside the entity’s interpolated bounds, retains that target between frames, and applies the smallest correction to a narrow inner margin when the crosshair crosses an edge. Its angle handling remains stable across the ±180° yaw seam.
+- **Movement randomness** ranges from 0–100%. It varies correction strength, inserts occasional short correction pauses, and—while you move—sometimes makes a brief up-or-down aim-point jump before returning to center. Faster movement increases the positional effect, and 0% preserves the original continuous correction.
+- **Sigmoid smoothing** gives each camera correction a gentle–fast–gentle speed curve, reducing abrupt starts and robotic linear tracking while retaining the configured speed and turn limit.
 - **Minimum reaction** and **Maximum reaction** define a randomized 0–3 second reaction-time range. Set both to the same value for a fixed reaction time.
 
 Aim Assist pauses while a Minecraft menu is open and does not generate macOS mouse or keyboard events.
@@ -99,11 +104,19 @@ An attack occurs only when:
 
 Attacks run during Minecraft’s normal key-input phase to preserve ordinary interaction packet ordering.
 
-### No-Slow
+### Item No-Slow and Cobweb No-Slow
 
-No-Slow preserves normal local walking input while eating, drinking, drawing a bow, blocking, using other items, or moving through cobwebs. Cobweb handling applies only to the local player; berry bushes, powder snow, and other block effects remain unchanged.
+**Item No-Slow** preserves normal local walking input while eating, drinking, drawing a bow, blocking, or using other items.
+
+**Cobweb No-Slow** is a separate, **High Risk** switch that removes the cobweb movement multiplier for the local player. It leaves berry bushes, powder snow, and other block effects unchanged. Servers can easily detect or correct unusual cobweb movement, so enable it only where explicitly allowed.
 
 The server remains authoritative and may correct or reject modified movement.
+
+### Player Detection
+
+The Detect tab contains separate switches for Speed, Flight, No Fall, and Reach. Checks run locally against other visible players and require repeated suspicious samples before posting a red chat warning. Evidence decays when behavior returns to normal, and each player/check combination has a 20-second warning cooldown.
+
+These are heuristic warnings, not proof. Network lag, server-side abilities, custom movement, and unusual game mechanics can cause false positives.
 
 ## Privacy and networking
 
@@ -139,4 +152,3 @@ Build the Fabric bridge from `MatchaSheepBridge` with Java 21:
 ```
 
 The finished bridge JAR is written to `MatchaSheepBridge/build/libs`.
-
